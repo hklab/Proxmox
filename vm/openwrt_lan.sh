@@ -436,7 +436,7 @@ qm set $VMID \
   -scsi0 ${DISK0_REF},size=512M \
   -boot order=scsi0 \
   -tags hklab \
-  -description "<div align='center'><img src='https://raw.githubusercontent.com/hklab/Proxmox/main/misc/images/logo-150x150.png'/></a>
+  -description "<div align='center'><img src='https://raw.githubusercontent.com/hklab/Proxmox/main/images/logo-150x150.png'/></a>
 
 # OpenWRT" >/dev/null
 msg_ok "Created OpenWrt VM ${CL}${BL}(${HN})"
