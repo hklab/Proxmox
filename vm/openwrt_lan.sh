@@ -203,6 +203,7 @@ function default_settings() {
   LAN_BRG="vmbr0"
   LAN_IP_ADDR="192.168.1.1"
   LAN_NETMASK="255.255.255.0"
+  LAN_GATEWAY=""
   LAN_VLAN=""
   MTU=""
   START_VM="yes"
@@ -214,6 +215,7 @@ function default_settings() {
   echo -e "${DGN}Using LAN Bridge: ${BGN}${LAN_BRG}${CL}"
   echo -e "${DGN}Using LAN VLAN: ${BGN}Default${CL}"
   echo -e "${DGN}Using LAN IP Address: ${BGN}${LAN_IP_ADDR}${CL}"
+  echo -e "${DGN}Using LAN Gateway: ${BGN}${LAN_GATEWAY}${CL}"
   echo -e "${DGN}Using LAN NETMASK: ${BGN}${LAN_NETMASK}${CL}"
   echo -e "${DGN}Using Interface MTU Size: ${BGN}Default${CL}"
   echo -e "${DGN}Start VM when completed: ${BGN}yes${CL}"
@@ -285,6 +287,15 @@ function advanced_settings() {
     exit-script
   fi
 
+  if LAN_IP_ADDR=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Set a router gateway" 8 58 $LAN_GATEWAY --title "LAN GATEWAY" --cancel-button Exit-Script 3>&1 1>&2 2>&3); then
+    if [ -z $LAN_GATEWAY ]; then
+      LAN_GATEWAY=""
+    fi
+    echo -e "${DGN}Using LAN GATEWAY: ${BGN}$LAN_GATEWAY${CL}"
+  else
+    exit-script
+  fi
+  
   if LAN_NETMASK=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Set a router netmmask" 8 58 $LAN_NETMASK --title "LAN NETMASK" --cancel-button Exit-Script 3>&1 1>&2 2>&3); then
     if [ -z $LAN_NETMASK ]; then
       LAN_NETMASK="255.255.255.0"
@@ -452,12 +463,7 @@ send_line_to_vm "uci set network.lan.device=eth0"
 send_line_to_vm "uci set network.lan.proto=static"
 send_line_to_vm "uci set network.lan.ipaddr=${LAN_IP_ADDR}"
 send_line_to_vm "uci set network.lan.netmask=${LAN_NETMASK}"
-send_line_to_vm ""
-send_line_to_vm "uci delete firewall.@zone[1]"
-send_line_to_vm "uci set firewall.@zone[0].masq='1'"
-send_line_to_vm "uci set firewall.@defaults[0].input='ACCEPT'"
-send_line_to_vm "uci set firewall.@defaults[0].output='ACCEPT'"
-send_line_to_vm "uci set firewall.@defaults[0].forward='ACCEPT'"
+send_line_to_vm "uci set network.lan.gateway=${LAN_GATEWAY}"
 send_line_to_vm ""
 send_line_to_vm "uci delete dhcp.wan"
 send_line_to_vm "uci delete dhcp.lan"
