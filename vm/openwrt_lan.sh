@@ -287,7 +287,7 @@ function advanced_settings() {
     exit-script
   fi
 
-  if LAN_IP_ADDR=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Set a router gateway" 8 58 $LAN_GATEWAY --title "LAN GATEWAY" --cancel-button Exit-Script 3>&1 1>&2 2>&3); then
+  if LAN_GATEWAY=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Set a router gateway" 8 58 $LAN_GATEWAY --title "LAN GATEWAY" --cancel-button Exit-Script 3>&1 1>&2 2>&3); then
     if [ -z $LAN_GATEWAY ]; then
       LAN_GATEWAY=""
     fi
