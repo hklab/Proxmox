@@ -446,7 +446,7 @@ qm importdisk $VMID ${FILE%.*} $STORAGE ${DISK_IMPORT:-} 1>&/dev/null
 qm set $VMID \
   -scsi0 ${DISK0_REF},size=512M \
   -boot order=scsi0 \
-  -tags hklab \
+  -tags hklab-scripts \
   -description "<div align='center'><img src='https://raw.githubusercontent.com/hklab/Proxmox/main/images/logo-150x150.png'/></a>
 
 # OpenWRT" >/dev/null
