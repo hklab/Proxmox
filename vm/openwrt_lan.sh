@@ -196,6 +196,7 @@ function exit-script() {
 
 function default_settings() {
   VMID=$NEXTID
+  MACHINE=""
   HN=openwrt
   CORE_COUNT="1"
   RAM_SIZE="256"
@@ -208,6 +209,7 @@ function default_settings() {
   MTU=""
   START_VM="yes"
   echo -e "${DGN}Using Virtual Machine ID: ${BGN}${VMID}${CL}"
+  echo -e "${DGN}Using Machine Type: ${BGN}i440fx${CL}"
   echo -e "${DGN}Using Hostname: ${BGN}${HN}${CL}"
   echo -e "${DGN}Allocated Cores: ${BGN}${CORE_COUNT}${CL}"
   echo -e "${DGN}Allocated RAM: ${BGN}${RAM_SIZE}${CL}"
@@ -240,6 +242,21 @@ function advanced_settings() {
     fi
   done
 
+  if MACH=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "MACHINE TYPE" --radiolist --cancel-button Exit-Script "Choose Type" 10 58 2 \
+    "i440fx" "Machine i440fx" ON \
+    "q35" "Machine q35" OFF \
+    3>&1 1>&2 2>&3); then
+    if [ $MACH = q35 ]; then
+      echo -e "${DGN}Using Machine Type: ${BGN}$MACH${CL}"
+      MACHINE=" -machine q35"
+    else
+      echo -e "${DGN}Using Machine Type: ${BGN}$MACH${CL}"
+      MACHINE=""
+    fi
+  else
+    exit-script
+  fi
+  
   if VM_NAME=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Set Hostname" 8 58 openwrt --title "HOSTNAME" --cancel-button Exit-Script 3>&1 1>&2 2>&3); then
     if [ -z $VM_NAME ]; then
       HN="openwrt"
@@ -440,7 +457,7 @@ for i in {0,1}; do
 done
 
 msg_info "Creating OpenWrt VM"
-qm create $VMID -cores $CORE_COUNT -memory $RAM_SIZE -name $HN \
+qm create $VMID${MACHINE} -cores $CORE_COUNT -memory $RAM_SIZE -name $HN \
   -onboot 1 -ostype l26 -scsihw virtio-scsi-pci --tablet 0
 qm importdisk $VMID ${FILE%.*} $STORAGE ${DISK_IMPORT:-} 1>&/dev/null
 qm set $VMID \
